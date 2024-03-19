@@ -12,6 +12,6 @@ for el in ["👋 О нас", "📋 Направления", "🌟 Меропри
 universal.adjust(1)
 
 question = ReplyKeyboardBuilder()  # Клавиатура для того, чтобы задать вопрос
-for el in ["👋 О нас", "📋 Направления", "🌟 Мероприятия", "❌ Вернуться в меню"]:
-    universal.add(types.KeyboardButton(text=el))
-universal.adjust(1)
+for el in ["❌ Вернуться в меню"]:
+    question.add(types.KeyboardButton(text=el, ))
+question.adjust(1)
