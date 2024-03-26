@@ -25,7 +25,8 @@ async def send_welcome(message: types.Message):
                              reply_markup=first_qu.as_markup(resize_keyboard=True))
     else:
         # Если это не первый старт
-        if USERS[str(message.from_user.id)] == 'bachelor':
+        if USERS[
+            str(message.from_user.id)] == 'bachelor':  # приходится проверять, потому что для разных пользователей разные клавиатуры
             await message.answer('Мы уже здоровались! Выбери команду на кнопках ниже.',
                                  reply_markup=forbachelor.as_markup(resize_keyboard=True))
         else:
@@ -33,7 +34,7 @@ async def send_welcome(message: types.Message):
                                  reply_markup=universal.as_markup(resize_keyboard=True))
 
 
-@dp.message(Command("clear"))  # Команда clear, которая позволяет перевыбрать направление\
+@dp.message(Command("clear"))  # Команда clear, которая позволяет перевыбрать направление
 async def clear(message: types.Message):
     USERS[str(message.from_user.id)] = ''
     await message.answer('Теперь ты можешь заново выбрать, куда хочешь поступать, для этого отправь команду /start')
@@ -74,7 +75,7 @@ async def askme(message: types.Message):
 
 @dp.message(F.text == "👋 Больше о нас")
 async def askme(message: types.Message):
-    if str(message.from_user.id) in USERS:
+    if str(message.from_user.id) in USERS and USERS[str(message.from_user.id)] != '':
         if USERS[str(message.from_user.id)] == 'bachelor':
             await message.answer(
                 'В КАИ обучение – это не только лекции и сессии. У нас жизнь кипит и играет: мы поем, танцуем и творим на «Студенческой весне» и театральном фестивале «Икариада», укрепляем тело и дух в классном спорткомплексе с бассейном и тренажеркой, выезжаем на природу в загородный лагерь. А еще у нас есть коворкинги, вайфай, удобные общежития и вкусняшки в столовых.',
@@ -85,7 +86,7 @@ async def askme(message: types.Message):
 
 @dp.message(F.text == "📋 Направления")
 async def directions(message: types.Message):
-    if str(message.from_user.id) in USERS:
+    if str(message.from_user.id) in USERS and USERS[str(message.from_user.id)] != '':
         if USERS[str(message.from_user.id)] == 'bachelor':
             await message.answer("""Все направления подготовки и специальности разделены по институтам и факультетам, нажми на любое название и попадёшь на наш сайт, где сможешь подробно всё изучить.
 
@@ -95,14 +96,25 @@ async def directions(message: types.Message):
 <a href="https://abiturientu.kai.ru/iktzi-/-obrazovatel-nye-programmy-bakalavriata">🖥 Институт компьютерных технологий и защиты информации (ИКТЗИ)</a>
 <a href="https://abiturientu.kai.ru/iret-/-obrazovatel-nye-programmy-bakalavriata">📡 Институт радиоэлектроники, фотоники и цифровых технологий (ИРЭФ-ЦТ)</a>
 <a href="https://abiturientu.kai.ru/ieust-/-obrazovatel-nye-programmy-bakalavriata">💰 Институт инженерной экономики и предпринимательства (ИИЭиП)</a>
-<a href="https://abiturientu.kai.ru/vspit-/-obrazovatel-nye-programmy-bakalavriata">🚀 Высшая школа прикладных информационных технологий (ВШПИТ)</a>""",parse_mode="HTML")
+<a href="https://abiturientu.kai.ru/vspit-/-obrazovatel-nye-programmy-bakalavriata">🚀 Высшая школа прикладных информационных технологий (ВШПИТ)</a>""",
+                                 parse_mode="HTML")
     else:
         await message.answer('Кажется, мы незнакомы. Отправь команду /start и представься, пожалуйста.')
 
 
+@dp.message(F.text == "🌟 Важно ознакомиться")
+async def important(message: types.Message):
+    if str(message.from_user.id) in USERS and USERS[str(message.from_user.id)] != '':
+        if USERS[str(message.from_user.id)] == 'bachelor':
+            await message.answer("""В первую очередь зарегистрируйся в личном кабинете абитуриента lk.kai.ru - там ты сможешь подать документы в электронной форме, отследить свой рейтинг и узнать о том, что поступил!
+Также можешь ознакомиться с <a href="https://abiturientu.kai.ru/documents/1470594/10919962/Правила+приема+BO.pdf/2f8200d9-c9e8-4672-a0d1-be511bd781ad">правилами приёма</a> и <a href="https://abiturientu.kai.ru/normativnye-dokumenty">нормативными документами</a>.
+А на <a href="https://abiturientu.kai.ru/bakalavriat">сайте КАИ</a> ты можешь узнать подробнее о порядке поступления на бакалавриат и специалитет.""", parse_mode="HTML")
+    else:
+        await message.answer('Кажется, мы незнакомы. Отправь команду /start и представься, пожалуйста.')
+
 @dp.message(F.text == "🔍 Ещё")
 async def askme(message: types.Message):
-    if str(message.from_user.id) in USERS:
+    if str(message.from_user.id) in USERS and USERS[str(message.from_user.id)] != '':
         if USERS[str(message.from_user.id)] == 'bachelor':
             await message.answer(
                 '🏆 КНИТУ-КАИ входит в ТОП-50 лучших вузов страны: 👇\nhttps://raex-rr.com/education/russian_universities/top-100_universities/2023/',
@@ -114,7 +126,7 @@ async def askme(message: types.Message):
 @dp.message(F.text == "❌ Вернуться в меню")  # Если нажата кнопка возврата в меню
 async def cancel(message: types.Message):
     if USERS[str(message.from_user.id)] == 'bachelor':
-        await message.answer("Хорошо, вернёмся в меню.", reply_markup=back_menu.as_markup(resize_keyboard=True))
+        await message.answer("Хорошо, вернёмся в меню.", reply_markup=forbachelor.as_markup(resize_keyboard=True))
     else:
         await message.answer("Хорошо, вернёмся в меню.",
                              reply_markup=universal.as_markup(resize_keyboard=True))
@@ -122,7 +134,7 @@ async def cancel(message: types.Message):
 
 @dp.message(F.text)  # Обработка любых текстовых сообщений
 async def new_text(message: types.Message):
-    if str(message.from_user.id) in USERS:
+    if str(message.from_user.id) in USERS and USERS[str(message.from_user.id)] != '':
         if USERS[str(message.from_user.id)] == 'bachelor':
             await message.answer('Я не понял, что ты хочешь. Воспользуйся кнопками ниже.',
                                  reply_markup=forbachelor.as_markup(resize_keyboard=True))
