@@ -12,22 +12,22 @@ for el in ["👋 О нас", "📋 Направления", "🌟 Меропри
 universal.adjust(1)"""
 
 forbachelor = ReplyKeyboardBuilder()  # Клавиатура для бакалавров
-for el in ["👋 О нас", "📋 Направления", "🌟 Важно ознакомиться", "📃 Необходимые документы", "❓ Задать вопрос"]:
+for el in ["👋 О нас", "📋 Направления", "🌟 Важно ознакомиться", "📃 Необходимые документы", "🗓 Календарь приёма", "❓ Задать вопрос"]:
     forbachelor.add(types.KeyboardButton(text=el))
 forbachelor.adjust(2)
 
 formagistracy = ReplyKeyboardBuilder()  # Клавиатура для магистрантов
-for el in ["📋 Направления", "✍️ Вступительные испытания", "📃 Необходимые документы", "❓ Задать вопрос"]:
+for el in ["📋 Направления", "✍️ Вступительные испытания", "📃 Необходимые документы", "🗓 Календарь приёма", "❓ Задать вопрос"]:
     formagistracy.add(types.KeyboardButton(text=el))
 formagistracy.adjust(2)
 
 forspo = ReplyKeyboardBuilder()  # Клавиатура для спо
-for el in ["👋 О нас", "📋 Направления", "📃 Необходимые документы", "❓ Задать вопрос"]:
+for el in ["👋 О нас", "📋 Направления", "📃 Необходимые документы", "🗓 Календарь приёма", "❓ Задать вопрос"]:
     forspo.add(types.KeyboardButton(text=el))
 forspo.adjust(2)
 
 forgrad = ReplyKeyboardBuilder()  # Клавиатура для аспирантов
-for el in ["📋 Направления", "🌟 Важно ознакомиться", "📃 Необходимые документы", "❓ Задать вопрос"]:
+for el in ["📋 Направления", "🌟 Важно ознакомиться", "📃 Необходимые документы", "🗓 Календарь приёма", "❓ Задать вопрос"]:
     forgrad.add(types.KeyboardButton(text=el))
 forgrad.adjust(2)
 
