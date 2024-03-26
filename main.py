@@ -43,6 +43,8 @@ async def send_welcome(message: types.Message):
 @dp.message(Command("clear"))  # Команда clear, которая позволяет перевыбрать направление
 async def clear(message: types.Message):
     USERS[str(message.from_user.id)] = ''
+    with open('users.json', 'w') as fp:
+        json.dump(USERS, fp)  # Сохраняем в json
     await message.answer('Теперь ты можешь заново выбрать, куда хочешь поступать, для этого отправь команду /start',
                          reply_markup=types.ReplyKeyboardRemove())
 
@@ -147,26 +149,32 @@ async def directions(message: types.Message):
 
 <a href="https://abiturientu.kai.ru/iante/obrazovatel-nye-programmy-bakalavriata">✈️ Институт авиации, наземного транспорта и энергетики (ИАНТЭ)</a>
 <a href="https://abiturientu.kai.ru/fmf-/-obrazovatel-nye-programmy-bakalavriata">⚛️ Физико-математический факультет (ФМФ)</a>
-<a href="https://abiturientu.kai.ru/iaep-/-obrazovatel-nye-programmy-bakalavriata">🎚️ Институт автоматики и электронного приборостроения (ИАЭП)</a>
+<a href="https://abiturientu.kai.ru/iaep-/-obrazovatel-nye-programmy-bakalavriata">🎛️️ Институт автоматики и электронного приборостроения (ИАЭП)</a>
 <a href="https://abiturientu.kai.ru/iktzi-/-obrazovatel-nye-programmy-bakalavriata">🖥 Институт компьютерных технологий и защиты информации (ИКТЗИ)</a>
 <a href="https://abiturientu.kai.ru/iret-/-obrazovatel-nye-programmy-bakalavriata">📡 Институт радиоэлектроники, фотоники и цифровых технологий (ИРЭФ-ЦТ)</a>
 <a href="https://abiturientu.kai.ru/ieust-/-obrazovatel-nye-programmy-bakalavriata">💰 Институт инженерной экономики и предпринимательства (ИИЭиП)</a>
 <a href="https://abiturientu.kai.ru/vspit-/-obrazovatel-nye-programmy-bakalavriata">🚀 Высшая школа прикладных информационных технологий (ВШПИТ)</a>
 
-Также ты можешь выбрать направление подготовки <a href="https://abiturientu.kai.ru/obrazovatel-nye-programmy?ed=1">по этой ссылке</a> с помощью фильтров.""",
+Также ты можешь выбрать направление подготовки <a href="https://abiturientu.kai.ru/obrazovatel-nye-programmy?ed=1">по этой ссылке</a> с помощью фильтров.
+
+Проходные баллы за 2023 год можно найти <a href="https://abiturientu.kai.ru/documents/1470594/10927743/Результаты+конкурсного+приема+2023.pdf/1015e6e2-f98e-4f84-88eb-57b99c258d07">здесь</a>.""",
                                  parse_mode="HTML", disable_web_page_preview=True)
         elif USERS[str(message.from_user.id)] == 'magistracy':
             await message.answer("""<a href="https://abiturientu.kai.ru/obrazovatel-nye-programmy?ed=2">По этой ссылке</a> ты можешь выбрать образовательную программу, используя фильтры. Также предлагаю ознакомиться с планом приёма (количество мест):
 🔸<a href="https://abiturientu.kai.ru/documents/1470594/12192680/ПЛАН+ПРИЁМА+маг+бюджет+2024.pdf/e99089c6-51e2-421b-a2f7-b1f1ce37edd6">На бюджетное обучение</a>
 🔸<a href="https://abiturientu.kai.ru/documents/1470594/12192680/ПЛАН+ПРИЁМА+маг+договор+2024.pdf/63161d0b-5466-4c28-a1ba-4718ba791dcb">С оплатой стоимости</a>
-🔸<a href="https://abiturientu.kai.ru/documents/1470594/12192680/ПЛАН+ПРИЁМА+цно+маг+договор+2024.pdf/2e4a2f9f-36e1-4a48-8d7d-fa521e340375">С оплатой стоимости, заочное обучение</a>""",
+🔸<a href="https://abiturientu.kai.ru/documents/1470594/12192680/ПЛАН+ПРИЁМА+цно+маг+договор+2024.pdf/2e4a2f9f-36e1-4a48-8d7d-fa521e340375">С оплатой стоимости, заочное обучение</a>
+
+Проходные баллы за 2023 год можно найти <a href="https://abiturientu.kai.ru/documents/1470594/10927743/Результаты+конкурсного+приема+2023.pdf/1015e6e2-f98e-4f84-88eb-57b99c258d07">здесь</a>.""",
                                  parse_mode="HTML", disable_web_page_preview=True)
         elif USERS[str(message.from_user.id)] == 'spo':
             await message.answer("""<a href="https://abiturientu.kai.ru/obrazovatel-nye-programmy?ed=3">По этой ссылке</a> ты можешь выбрать образовательную программу, используя фильтры.
             
 Также можешь ознакомиться с правилами приёма (количеством мест):
 ▪️ <a href="https://abiturientu.kai.ru/documents/1470594/12196147/ПЛАН+ПРИЕМА+СПО+бюджет.pdf/d7545213-5190-4cb1-b667-344f4772af4a">На бюджетное обучение</a>
-▪️ <a href="https://abiturientu.kai.ru/documents/1470594/12196147/ПЛАН+ПРИЕМА+СПО+договор.pdf/7ea9acca-8072-4150-b19c-664f52a050b2">С оплатой стоимости</a>""",
+▪️ <a href="https://abiturientu.kai.ru/documents/1470594/12196147/ПЛАН+ПРИЕМА+СПО+договор.pdf/7ea9acca-8072-4150-b19c-664f52a050b2">С оплатой стоимости</a>
+
+Проходные баллы за 2023 год можно найти <a href="https://abiturientu.kai.ru/documents/1470594/10927743/Результаты+конкурсного+приема+2023.pdf/1015e6e2-f98e-4f84-88eb-57b99c258d07">здесь</a>.""",
                                  parse_mode="HTML", disable_web_page_preview=True)
         elif USERS[str(message.from_user.id)] == 'grad':
             await message.answer("""""", parse_mode="HTML", disable_web_page_preview=True)
