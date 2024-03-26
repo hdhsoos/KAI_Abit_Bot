@@ -13,34 +13,53 @@ with open('users.json', 'r') as fh:
     USERS = json.load(fh)  # Здесь будем хранить id пользователей
     # {id: [type]}
 
+
 @dp.message(Command("start"))  # Реакция на команду старт
 async def send_welcome(message: types.Message):
-    if str(message.from_user.id) not in USERS:  # Если это первый старт
-        USERS[str(message.from_user.id)] = ['']  # Добавляем пользователя, [type]
-        with open('users.json', 'w') as fp:
-            json.dump(USERS, fp)  # Сохраняем в json
+    if str(message.from_user.id) not in USERS or USERS[
+        str(message.from_user.id)] == '':  # Если это первый старт или пользователь не представился
         await message.answer(
             'Привет, {}. Я бот КНИТУ-КАИ, и я помогу тебе узнать информацию о поступлении в 2024 году.'.format(
                 message.from_user.first_name))
-        await message.answer("Выбери кто ты на клавиатуре внизу.",
+        await message.answer("Выбери на клавиатуре, куда ты будешь поступать.",
                              reply_markup=first_qu.as_markup(resize_keyboard=True))
     else:
         # Если это не первый старт
-        await message.answer('Мы уже здоровались! Выбери команду на кнопках ниже.',
-                             reply_markup=universal.as_markup(resize_keyboard=True))
+        if USERS[str(message.from_user.id)] == 'bachelor':
+            await message.answer('Мы уже здоровались! Выбери команду на кнопках ниже.',
+                                 reply_markup=forbachelor.as_markup(resize_keyboard=True))
+        else:
+            await message.answer('Мы уже здоровались! Выбери команду на кнопках ниже.',
+                                 reply_markup=universal.as_markup(resize_keyboard=True))
 
 
-for el in ["📚 Заканчиваю школу", "👩‍🎓 Хочу в магистратуру", "👨‍👩‍👧‍👦 Я родитель", "🙊 Не хочу отвечать"]:
+@dp.message(Command("clear"))  # Команда clear, которая позволяет перевыбрать направление\
+async def clear(message: types.Message):
+    USERS[str(message.from_user.id)] = ''
+    await message.answer('Теперь ты можешь заново выбрать, куда хочешь поступать, для этого отправь команду /start')
+
+
+@dp.message(F.text == "📚 На бакалавриат")  # Если написавший пользователь - бакалавр
+async def bachelor(message: types.Message):
+    USERS[str(message.from_user.id)] = 'bachelor'  # Сохраняем информацию о том, кем себя назвал пользователь.
+    with open('users.json', 'w') as fp:
+        json.dump(USERS, fp)  # Сохраняем в json
+    await message.answer(
+        "Приятно познакомиться! Ты сделаешь правильный выбор, если поступишь к нам, ведь в КНИТУ-КАИ более 40 направлений подготовки бакалавриата и образовательных программ специалитета. Поступив к нам, ты не просто получишь престижный диплом об образовании – ты получишь реально востребованную на рынке труда профессию. Выбери на клавиатуре, о чем хочешь узнать подробнее.",
+        reply_markup=forbachelor.as_markup(resize_keyboard=True))
+
+
+for el in ["👩‍🎓 В магистратуру", "📔 На СПО", "🔭 В аспирантуру"]:
     # Пока что упрощенная реакция на каждый выбор
     @dp.message(F.text == el)
     async def schoolkid(message: types.Message):
-        USERS[str(message.from_user.id)] = [el]  # Сохраняем информацию о том, кем себя назвал пользователь.
+        USERS[str(message.from_user.id)] = el  # Сохраняем информацию о том, кем себя назвал пользователь.
         with open('users.json', 'w') as fp:
             json.dump(USERS, fp)  # Сохраняем в json
         await message.answer("Приятно познакомиться! Выбери на кнопках интересующий тебя раздел.",
                              reply_markup=universal.as_markup(resize_keyboard=True))
 
-for el in ["👋 О нас", "📋 Направления", "🌟 Мероприятия"]:
+for el in ["👋 О нас", "🌟 Мероприятия"]:
     # Пока что упрощенная реакция на каждый выбор
     @dp.message(F.text == el)
     async def about_us(message: types.Message):
@@ -53,20 +72,63 @@ async def askme(message: types.Message):
     await message.answer('Чтобы задать вопрос напиши @abit_kai_help_bot, наши модераторы тебе помогут!')
 
 
-"""@dp.message(F.text == "❌ Вернуться в меню")  # Если нажата кнопка возврата в меню
+@dp.message(F.text == "👋 Больше о нас")
+async def askme(message: types.Message):
+    if str(message.from_user.id) in USERS:
+        if USERS[str(message.from_user.id)] == 'bachelor':
+            await message.answer(
+                'В КАИ обучение – это не только лекции и сессии. У нас жизнь кипит и играет: мы поем, танцуем и творим на «Студенческой весне» и театральном фестивале «Икариада», укрепляем тело и дух в классном спорткомплексе с бассейном и тренажеркой, выезжаем на природу в загородный лагерь. А еще у нас есть коворкинги, вайфай, удобные общежития и вкусняшки в столовых.',
+                reply_markup=next_back.as_markup(resize_keyboard=True))
+    else:
+        await message.answer('Кажется, мы незнакомы. Отправь команду /start и представься, пожалуйста.')
+
+
+@dp.message(F.text == "📋 Направления")
+async def directions(message: types.Message):
+    if str(message.from_user.id) in USERS:
+        if USERS[str(message.from_user.id)] == 'bachelor':
+            await message.answer("""Все направления подготовки и специальности разделены по институтам и факультетам, нажми на любое название и попадёшь на наш сайт, где сможешь подробно всё изучить.
+
+<a href="https://abiturientu.kai.ru/iante/obrazovatel-nye-programmy-bakalavriata">✈️ Институт авиации, наземного транспорта и энергетики (ИАНТЭ)</a>
+<a href="https://abiturientu.kai.ru/fmf-/-obrazovatel-nye-programmy-bakalavriata">⚛️ Физико-математический факультет (ФМФ)</a>
+<a href="https://abiturientu.kai.ru/iaep-/-obrazovatel-nye-programmy-bakalavriata">🎚️ Институт автоматики и электронного приборостроения (ИАЭП)</a>
+<a href="https://abiturientu.kai.ru/iktzi-/-obrazovatel-nye-programmy-bakalavriata">🖥 Институт компьютерных технологий и защиты информации (ИКТЗИ)</a>
+<a href="https://abiturientu.kai.ru/iret-/-obrazovatel-nye-programmy-bakalavriata">📡 Институт радиоэлектроники, фотоники и цифровых технологий (ИРЭФ-ЦТ)</a>
+<a href="https://abiturientu.kai.ru/ieust-/-obrazovatel-nye-programmy-bakalavriata">💰 Институт инженерной экономики и предпринимательства (ИИЭиП)</a>
+<a href="https://abiturientu.kai.ru/vspit-/-obrazovatel-nye-programmy-bakalavriata">🚀 Высшая школа прикладных информационных технологий (ВШПИТ)</a>""",parse_mode="HTML")
+    else:
+        await message.answer('Кажется, мы незнакомы. Отправь команду /start и представься, пожалуйста.')
+
+
+@dp.message(F.text == "🔍 Ещё")
+async def askme(message: types.Message):
+    if str(message.from_user.id) in USERS:
+        if USERS[str(message.from_user.id)] == 'bachelor':
+            await message.answer(
+                '🏆 КНИТУ-КАИ входит в ТОП-50 лучших вузов страны: 👇\nhttps://raex-rr.com/education/russian_universities/top-100_universities/2023/',
+                reply_markup=back_menu.as_markup(resize_keyboard=True))
+    else:
+        await message.answer('Кажется, мы незнакомы. Отправь команду /start и представься, пожалуйста.')
+
+
+@dp.message(F.text == "❌ Вернуться в меню")  # Если нажата кнопка возврата в меню
 async def cancel(message: types.Message):
-    USERS[str(message.from_user.id)] = [USERS[str(message.from_user.id)][0],
-                                        False]  # Опускаем флаг о том, что задан вопрос
-    with open('users.json', 'w') as fp:
-        json.dump(USERS, fp)  # Сохраняем в json
-    await message.answer("Хорошо, вернёмся в меню.",
-                         reply_markup=universal.as_markup(resize_keyboard=True))"""
+    if USERS[str(message.from_user.id)] == 'bachelor':
+        await message.answer("Хорошо, вернёмся в меню.", reply_markup=back_menu.as_markup(resize_keyboard=True))
+    else:
+        await message.answer("Хорошо, вернёмся в меню.",
+                             reply_markup=universal.as_markup(resize_keyboard=True))
 
 
 @dp.message(F.text)  # Обработка любых текстовых сообщений
 async def new_text(message: types.Message):
-    await message.answer('Я не понял, что ты хочешь. Воспользуйся кнопками ниже.',
-                         reply_markup=universal.as_markup(resize_keyboard=True))
+    if str(message.from_user.id) in USERS:
+        if USERS[str(message.from_user.id)] == 'bachelor':
+            await message.answer('Я не понял, что ты хочешь. Воспользуйся кнопками ниже.',
+                                 reply_markup=forbachelor.as_markup(resize_keyboard=True))
+    else:
+        await message.answer('Я не понял, что ты хочешь. Воспользуйся кнопками ниже.',
+                             reply_markup=universal.as_markup(resize_keyboard=True))
 
 
 async def main():
