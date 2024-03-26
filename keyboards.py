@@ -12,9 +12,14 @@ for el in ["👋 О нас", "📋 Направления", "🌟 Меропри
 universal.adjust(1)
 
 forbachelor = ReplyKeyboardBuilder()  # Клавиатура для бакалавров
-for el in ["👋 Больше о нас", "📋 Направления", "🌟 Важно ознакомиться", "❓ Задать вопрос"]:
+for el in ["📋 Направления", "🌟 Важно ознакомиться", "📃 Необходимые документы", "❓ Задать вопрос"]:
     forbachelor.add(types.KeyboardButton(text=el))
 forbachelor.adjust(1)
+
+formagistracy = ReplyKeyboardBuilder()  # Клавиатура для магистрантов
+for el in ["👋 Больше о нас", "📋 Направления", "✍️ Вступительные испытания", "📃 Необходимые документы", "❓ Задать вопрос"]:
+    formagistracy.add(types.KeyboardButton(text=el))
+formagistracy.adjust(1)
 
 back_menu = ReplyKeyboardBuilder()  # Клавиатура для того, чтобы вернуться в меню
 for el in ["❌ Вернуться в меню"]:
