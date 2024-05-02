@@ -12,7 +12,7 @@ for el in ["👋 О нас", "📋 Направления", "🌟 Меропри
 universal.adjust(1)"""
 
 forbachelor = ReplyKeyboardBuilder()  # Клавиатура для бакалавров
-for el in ["👋 О нас", "📋 Направления", "🌟 Важно ознакомиться", "📃 Необходимые документы", "❓ Задать вопрос", "✖️ Изменить выбор"]:
+for el in ["👋 О нас", "📋 Направления", "🌟 Важно ознакомиться", "📃 Необходимые документы", "❓ Задать вопрос", "👤 Личный кабинет", "✖️ Изменить выбор"]:
     forbachelor.add(types.KeyboardButton(text=el))
 forbachelor.adjust(2)
 
@@ -54,3 +54,10 @@ buttons = [[types.InlineKeyboardButton(text="✈️ ИАНТЭ", callback_data="
            [types.InlineKeyboardButton(text="📡 ИРЭФ-ЦТ", callback_data="IREF"), types.InlineKeyboardButton(text="💰 ИИЭиП", callback_data="IIEP")],
            [types.InlineKeyboardButton(text="🚀 ВШПИТ", callback_data="VSHPIT"),  types.InlineKeyboardButton(text="Посмотреть все", url="https://abiturientu.kai.ru/documents/1470594/10927743/Результаты+конкурсного+приема+2023.pdf/1015e6e2-f98e-4f84-88eb-57b99c258d07")]]
 facult_keyb = types.InlineKeyboardMarkup(inline_keyboard=buttons)
+
+# Математика, Русский, Информатика, Физика, Химия, Обществознание, Иностранный
+buttons = [[types.InlineKeyboardButton(text="Математика", callback_data="Subj_Math"), types.InlineKeyboardButton(text="Русский", callback_data="Subj_Russian")],
+           [types.InlineKeyboardButton(text="Информатика", callback_data="Subj_IT"), types.InlineKeyboardButton(text="Физика", callback_data="Subj_Phys")],
+           [types.InlineKeyboardButton(text="Химия", callback_data="Subj_Chem"), types.InlineKeyboardButton(text="Обществознание", callback_data="Subj_Soc")],
+           [types.InlineKeyboardButton(text="Иностранный", callback_data="Subj_Eng"),  types.InlineKeyboardButton(text="Дополнительные баллы", callback_data="Subj_More")]]
+subj_keyb = types.InlineKeyboardMarkup(inline_keyboard=buttons)
