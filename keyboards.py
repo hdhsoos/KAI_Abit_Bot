@@ -2,7 +2,7 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from aiogram import types
 
 first_qu = ReplyKeyboardBuilder()  # Первая клавиатура - спрашиваем, кем является пользователь
-for el in ["📚 На бакалавриат", "👩‍🎓 В магистратуру", "📔 На СПО", "🔭 В аспирантуру"]:
+for el in ["📚 На бакалавриат", "👩‍🎓 В магистратуру", "📔 На СПО"]: #, "🔭 В аспирантуру"
     first_qu.add(types.KeyboardButton(text=el))
 first_qu.adjust(1)
 
