@@ -45,3 +45,12 @@ next_back = ReplyKeyboardBuilder()  # Клавиатура для того, чт
 for el in ["🔍 Ещё", "❌ Вернуться в меню"]:
     next_back.add(types.KeyboardButton(text=el))
 next_back.adjust(1)
+
+buttons = [[types.InlineKeyboardButton(text="Посмотреть проходные баллы", callback_data="see_points")]]
+see_point_keyb = types.InlineKeyboardMarkup(inline_keyboard=buttons)
+
+buttons = [[types.InlineKeyboardButton(text="✈️ ИАНТЭ", callback_data="IANTE"), types.InlineKeyboardButton(text="⚛️ ФМФ", callback_data="FMF")],
+           [types.InlineKeyboardButton(text="🎛️ ИАЭП", callback_data="IAEP"), types.InlineKeyboardButton(text="🖥 ИКТЗИ", callback_data="IKTZI")],
+           [types.InlineKeyboardButton(text="📡 ИРЭФ-ЦТ", callback_data="IREF"), types.InlineKeyboardButton(text="💰 ИИЭиП", callback_data="IIEP")],
+           [types.InlineKeyboardButton(text="🚀 ВШПИТ", callback_data="VSHPIT"),  types.InlineKeyboardButton(text="Посмотреть все", url="https://abiturientu.kai.ru/documents/1470594/10927743/Результаты+конкурсного+приема+2023.pdf/1015e6e2-f98e-4f84-88eb-57b99c258d07")]]
+facult_keyb = types.InlineKeyboardMarkup(inline_keyboard=buttons)

@@ -187,10 +187,8 @@ async def directions(message: types.Message):
 <a href="https://abiturientu.kai.ru/ieust-/-obrazovatel-nye-programmy-bakalavriata">💰 Институт инженерной экономики и предпринимательства (ИИЭиП)</a>
 <a href="https://abiturientu.kai.ru/vspit-/-obrazovatel-nye-programmy-bakalavriata">🚀 Высшая школа прикладных информационных технологий (ВШПИТ)</a>
 
-Также ты можешь выбрать направление подготовки <a href="https://abiturientu.kai.ru/obrazovatel-nye-programmy?ed=1">по этой ссылке</a> с помощью фильтров.
-
-Проходные баллы за 2023 год можно найти <a href="https://abiturientu.kai.ru/documents/1470594/10927743/Результаты+конкурсного+приема+2023.pdf/1015e6e2-f98e-4f84-88eb-57b99c258d07">здесь</a>.""",
-                                 parse_mode="HTML", disable_web_page_preview=True)
+Также ты можешь выбрать направление подготовки <a href="https://abiturientu.kai.ru/obrazovatel-nye-programmy?ed=1">по этой ссылке</a> с помощью фильтров.""",
+                                 parse_mode="HTML", disable_web_page_preview=True, reply_markup=see_point_keyb)
         elif USERS[str(message.from_user.id)] == 'magistracy':
             await message.answer("""<a href="https://abiturientu.kai.ru/obrazovatel-nye-programmy?ed=2">По этой ссылке</a> ты можешь выбрать образовательную программу, используя фильтры. Также предлагаю ознакомиться с планом приёма (количество мест):
 🔸<a href="https://abiturientu.kai.ru/documents/1470594/12192680/ПЛАН+ПРИЁМА+маг+бюджет+2024.pdf/e99089c6-51e2-421b-a2f7-b1f1ce37edd6">На бюджетное обучение</a>
@@ -213,7 +211,45 @@ async def directions(message: types.Message):
     else:
         await message.answer('Кажется, мы незнакомы. Отправь команду /start и представься, пожалуйста.')
 
+@dp.callback_query()
+async def callbacks_num(callback: types.CallbackQuery):
+    action = callback.data
+    if action == "see_points":
+        await callback.message.answer("Выбери интересующий тебя институт или факультет.", reply_markup=facult_keyb)
+    elif action == "IANTE":
+        await callback.message.answer()
+    elif action == "FMF":
+        await callback.message.answer()
+    elif action == "IAEP":
+        await callback.message.answer()
+    elif action == "IKTZI":
+        await callback.message.answer(
+"""<b>01.03.02 Прикладная математика и информатика</b>
+Бюджет: 252    Сверхплановое: 173
 
+<b>09.03.01 Информатика и вычислительная техника</b>
+Бюджет: 248    Сверхплановое: 159
+
+<b>09.03.02 Информационные системы и технологии</b>
+Бюджет: 259    Сверхплановое: 161
+
+<b>09.03.03 Прикладная информатика</b>
+Бюджет: 248    Сверхплановое: 166
+
+<b>09.03.04 Программная инженерия</b>
+Бюджет: 269    Сверхплановое: 139
+
+<b>10.03.01 Информационная безопасность</b>
+Бюджет: 253    Сверхплановое: 183
+
+<b>10.05.02 Информационная безопасность телекоммуникационных систем</b>
+Бюджет: 242    Сверхплановое: 199""", parse_mode="HTML")
+    elif action == "IREF":
+        await callback.message.answer()
+    elif action == "IIEP":
+        await callback.message.answer()
+    elif action == "VSHPIT":
+        await callback.message.answer()
 @dp.message(F.text == "🗓 Календарь приёма")
 async def calendar(message: types.Message):
     if str(message.from_user.id) in USERS and USERS[str(message.from_user.id)] != '':
