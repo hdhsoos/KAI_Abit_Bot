@@ -18,14 +18,22 @@ with open('score.json', 'r') as fh:  # Здесь будем хранить ба
     SCORES = json.load(fh)
     # {id: [0, 0, 0, 0, 0, 0, 0, 0]}
     # Математика, Русский, Информатика, Физика, Химия, Обществознание, Иностранный, Доп
+with open('FLAG.json', 'r') as fh:  # Здесь будем хранить флаги
+    FLAG = json.load(fh)
+    # {id: [True]) задан ли вопрос
 
 
 @dp.message(Command("start"))  # Реакция на команду старт
 async def send_welcome(message: types.Message):
+    global USERS
     if str(message.from_user.id) not in USERS or USERS[
         str(message.from_user.id)] == '':  # Если это первый старт или пользователь не представился
+        USERS[str(message.from_user.id)] = ''
         with open('users.json', 'w') as fp:
             json.dump(USERS, fp)
+        FLAG[str(message.from_user.id)] = [False]
+        with open('FLAG.json', 'w') as fp:
+            json.dump(FLAG, fp)
         await message.answer(
             'Привет, {}. Я бот КНИТУ-КАИ, и я помогу тебе узнать информацию о поступлении в 2024 году.'.format(
                 message.from_user.first_name))
@@ -72,14 +80,15 @@ async def clear(message: types.Message):
     USERS[str(message.from_user.id)] = ''
     with open('users.json', 'w') as fp:
         json.dump(USERS, fp)  # Сохраняем в json
-    await message.answer('Теперь ты можешь заново выбрать уровень образования',
+    await message.answer('Теперь ты можешь заново выбрать уровень образования.',
                          reply_markup=first_qu.as_markup(resize_keyboard=True))
 
 
 @dp.message(F.text == "📚 На бакалавриат")  # Если написавший пользователь - бакалавр
 async def bachelor(message: types.Message):
     USERS[str(message.from_user.id)] = 'bachelor'  # Сохраняем информацию о том, кем себя назвал пользователь.
-    SCORES[str(message.from_user.id)] = [0, 0, 0, 0, 0, 0, 0, 0]  # Здесь будем хранить данные о пользователе позже
+    if str(message.from_user.id) not in SCORES: # Чтобы при смене выбора баллы ЕГЭ не удалялись
+        SCORES[str(message.from_user.id)] = [0, 0, 0, 0, 0, 0, 0, 0]  # Здесь будем хранить данные о пользователе позже
     with open('users.json', 'w') as fp:
         json.dump(USERS, fp)  # Сохраняем в json
     with open('score.json', 'w') as fp:
@@ -131,12 +140,14 @@ async def profile(message: types.Message):
         with open('score.json', 'w') as fp:
             json.dump(SCORES, fp)  # Сохраняем в json
         await message.answer("""
-Ты ещё не вводил(а) свои баллы ЕГЭ. Выбери предмет на кнопках выше и введи баллы, я запомню их.""", reply_markup=subj_keyb)
+Ты ещё не вводил(а) свои баллы ЕГЭ. Выбери предмет на кнопках выше и введи баллы, я запомню их.""",
+                             reply_markup=subj_keyb)
     else:
-        A = ['Математика', 'Русский язык', 'Информатика', 'Физика', 'Химия', 'Обществознание', 'Иностранный язык', 'Дополнительные баллы']
+        A = ['Математика', 'Русский язык', 'Информатика', 'Физика', 'Химия', 'Обществознание', 'Иностранный язык',
+             'Дополнительные баллы']
         res = ''
         end = ''
-        s = SCORES[str(message.from_user.id)][-1] # Сумма математика + русский + достижения
+        s = SCORES[str(message.from_user.id)][-1]  # Сумма математика + русский + достижения
         usl = True  # Останется тру если русский и математика есть
         usl2 = False
         if s > 0:
@@ -158,9 +169,10 @@ async def profile(message: types.Message):
         if end == '':
             end = 'Общая сумма: {}'.format(sum(SCORES[str(message.from_user.id)]))
         await message.answer(
-"""{}
+            """{}
 {}
 Нажми на кнопки ниже, если хочешь добавить или изменить баллы.""".format(res, end), reply_markup=subj_keyb)
+
 
 @dp.message(F.text == "👋 О нас")
 async def askme(message: types.Message):
@@ -260,7 +272,12 @@ async def directions(message: types.Message):
 @dp.callback_query()
 async def callbacks_num(callback: types.CallbackQuery):
     action = callback.data
-    if action == "see_points":
+    if action.split('_')[0] == 'Subj':
+        await callback.message.answer('Введи балл. Если передумал(а) отправь любой символ.')
+        FLAG[str(callback.from_user.id)] = [action.split('_')[1]]
+        with open('FLAG.json', 'w') as fp:
+            json.dump(FLAG, fp)
+    elif action == "see_points":
         await callback.message.answer("Выбери интересующий тебя институт или факультет.", reply_markup=facult_keyb)
     elif action == "IANTE":
         await callback.message.answer()
@@ -271,25 +288,25 @@ async def callbacks_num(callback: types.CallbackQuery):
     elif action == "IKTZI":
         await callback.message.answer(
             """<b>01.03.02 Прикладная математика и информатика</b>
-            Бюджет: 252    Сверхплановое: 173
-            
-            <b>09.03.01 Информатика и вычислительная техника</b>
-            Бюджет: 248    Сверхплановое: 159
-            
-            <b>09.03.02 Информационные системы и технологии</b>
-            Бюджет: 259    Сверхплановое: 161
-            
-            <b>09.03.03 Прикладная информатика</b>
-            Бюджет: 248    Сверхплановое: 166
-            
-            <b>09.03.04 Программная инженерия</b>
-            Бюджет: 269    Сверхплановое: 139
-            
-            <b>10.03.01 Информационная безопасность</b>
-            Бюджет: 253    Сверхплановое: 183
-            
-            <b>10.05.02 Информационная безопасность телекоммуникационных систем</b>
-            Бюджет: 242    Сверхплановое: 199""", parse_mode="HTML")
+Бюджет: 252    Сверхплановое: 173
+
+<b>09.03.01 Информатика и вычислительная техника</b>
+Бюджет: 248    Сверхплановое: 159
+
+<b>09.03.02 Информационные системы и технологии</b>
+Бюджет: 259    Сверхплановое: 161
+
+<b>09.03.03 Прикладная информатика</b>
+Бюджет: 248    Сверхплановое: 166
+
+<b>09.03.04 Программная инженерия</b>
+Бюджет: 269    Сверхплановое: 139
+
+<b>10.03.01 Информационная безопасность</b>
+Бюджет: 253    Сверхплановое: 183
+
+<b>10.05.02 Информационная безопасность телекоммуникационных систем</b>
+Бюджет: 242    Сверхплановое: 199""", parse_mode="HTML")
     elif action == "IREF":
         await callback.message.answer()
     elif action == "IIEP":
@@ -421,7 +438,30 @@ async def cancel(message: types.Message):
 
 @dp.message(F.text)  # Обработка любых текстовых сообщений
 async def new_text(message: types.Message):
-    if str(message.from_user.id) in USERS and USERS[str(message.from_user.id)] != '':
+    usll = True
+    # Математика, Русский, Информатика, Физика, Химия, Обществознание, Иностранный, Доп
+    if FLAG[str(message.from_user.id)][0] != False:
+        a = message.text
+        try:
+            a = int(a)
+            if 0 <= a <= 100:
+                SCORES[str(message.from_user.id)][int(FLAG[str(message.from_user.id)][0])] = a
+                with open('score.json', 'w') as fp:
+                    json.dump(SCORES, fp)  # Сохраняем в json
+                await message.answer('Принято. Можешь снова вызвать личный кабинет из меню.',
+                                     reply_markup=forbachelor.as_markup(resize_keyboard=True))
+                FLAG[str(message.from_user.id)] = [False]
+                with open('FLAG.json', 'w') as fp:
+                    json.dump(FLAG, fp)
+            else:
+                await message.answer('Введено неверное число. Попробуй снова.')
+        except:
+            FLAG[str(message.from_user.id)] = [False]
+            with open('FLAG.json', 'w') as fp:
+                json.dump(FLAG, fp)
+            await message.answer('Было введено не просто число, так что вернёмся в меню.',
+                                 reply_markup=forbachelor.as_markup(resize_keyboard=True))
+    elif str(message.from_user.id) in USERS and USERS[str(message.from_user.id)] != '':
         if USERS[str(message.from_user.id)] == 'bachelor':
             await message.answer('Я не понял, что ты хочешь. Воспользуйся кнопками ниже.',
                                  reply_markup=forbachelor.as_markup(resize_keyboard=True))

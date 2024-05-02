@@ -55,9 +55,9 @@ buttons = [[types.InlineKeyboardButton(text="✈️ ИАНТЭ", callback_data="
            [types.InlineKeyboardButton(text="🚀 ВШПИТ", callback_data="VSHPIT"),  types.InlineKeyboardButton(text="Посмотреть все", url="https://abiturientu.kai.ru/documents/1470594/10927743/Результаты+конкурсного+приема+2023.pdf/1015e6e2-f98e-4f84-88eb-57b99c258d07")]]
 facult_keyb = types.InlineKeyboardMarkup(inline_keyboard=buttons)
 
-# Математика, Русский, Информатика, Физика, Химия, Обществознание, Иностранный
-buttons = [[types.InlineKeyboardButton(text="Математика", callback_data="Subj_Math"), types.InlineKeyboardButton(text="Русский", callback_data="Subj_Russian")],
-           [types.InlineKeyboardButton(text="Информатика", callback_data="Subj_IT"), types.InlineKeyboardButton(text="Физика", callback_data="Subj_Phys")],
-           [types.InlineKeyboardButton(text="Химия", callback_data="Subj_Chem"), types.InlineKeyboardButton(text="Обществознание", callback_data="Subj_Soc")],
-           [types.InlineKeyboardButton(text="Иностранный", callback_data="Subj_Eng"),  types.InlineKeyboardButton(text="Дополнительные баллы", callback_data="Subj_More")]]
+# Математика, Русский, Информатика, Физика, Химия, Обществознание, Иностранный, Доп
+buttons = [[types.InlineKeyboardButton(text="Математика", callback_data="Subj_0"), types.InlineKeyboardButton(text="Русский", callback_data="Subj_1")],
+           [types.InlineKeyboardButton(text="Информатика", callback_data="Subj_2"), types.InlineKeyboardButton(text="Физика", callback_data="Subj_3")],
+           [types.InlineKeyboardButton(text="Химия", callback_data="Subj_4"), types.InlineKeyboardButton(text="Обществознание", callback_data="Subj_5")],
+           [types.InlineKeyboardButton(text="Иностранный", callback_data="Subj_6"),  types.InlineKeyboardButton(text="Дополнительные баллы", callback_data="Subj_7")]]
 subj_keyb = types.InlineKeyboardMarkup(inline_keyboard=buttons)
