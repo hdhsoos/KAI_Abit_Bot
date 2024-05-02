@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from api import api_token  # Токен в отдельном файле
-from keyboards import *  # Клавиатура в отдельном файле
+from keyboards import *  # Клавиатуры в отдельном файле
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters.command import Command
 import asyncio
 import logging
 import json
-import aioschedule
-from datetime import date
 
 bot = Bot(token=api_token)  # Классические пункты для работы с aiogram
 dp = Dispatcher()
