@@ -171,7 +171,7 @@ async def profile(message: types.Message):
         await message.answer(
             """{}
 {}
-Нажми на кнопки ниже, если хочешь добавить или изменить баллы.""".format(res, end), reply_markup=subj_keyb)
+Нажми на кнопки ниже, если хочешь добавить или изменить баллы. Чтобы удалить баллы по какому-то предмету, выбери его и отправь 0.""".format(res, end), reply_markup=subj_keyb)
 
 
 @dp.message(F.text == "👋 О нас")
@@ -280,7 +280,41 @@ async def callbacks_num(callback: types.CallbackQuery):
     elif action == "see_points":
         await callback.message.answer("Выбери интересующий тебя институт или факультет.", reply_markup=facult_keyb)
     elif action == "IANTE":
-        await callback.message.answer()
+        await callback.message.answer("""<b>13.03.01 Теплоэнергетика и теплотехника</b>
+Бюджет: 165    Сверхплановое: 78
+
+<b>13.03.03 Энергетическое машиностроение</b>
+Бюджет: 169    Сверхплановое: 156
+
+<b>15.03.01 Машиностроение</b>
+Бюджет: 198    Сверхплановое: 138
+
+<b>15.03.05 Конструкторско-технологическое обеспечение машиностроительных производств </b>
+Бюджет: 191    Сверхплановое: 140
+
+<b>22.03.01 Материаловедение и технологии материалов</b>
+Бюджет: 173    Сверхплановое: 79
+
+<b>23.03.03 Эксплуатация транспортно-технологических машин и комплексов</b>
+Бюджет: 182    Сверхплановое: 139
+
+<b>24.03.04 Авиастроение</b>
+Бюджет: 231    Сверхплановое: 139
+
+<b>24.03.05 Двигатели летательных аппаратов</b>
+Бюджет: 205    Сверхплановое: 148
+
+<b>25.03.01 Техническая эксплуатация летательных аппаратов и двигателей</b>
+Бюджет: 220    Сверхплановое: 138
+
+<b>26.03.02 Кораблестроение, океанотехника и системотехника объектов морской инфраструктуры</b>
+Бюджет: 187    Сверхплановое: 143
+
+<b>24.05.02 Проектирование авиационных и ракетных двигателей</b>
+Бюджет: 196    Сверхплановое: 158
+
+<b>24.05.07 Самолето- и вертолетостроение</b>
+Бюджет: 218    Сверхплановое: 148""", parse_mode="HTML")
     elif action == "FMF":
         await callback.message.answer()
     elif action == "IAEP":
@@ -313,7 +347,7 @@ async def callbacks_num(callback: types.CallbackQuery):
         await callback.message.answer()
     elif action == "VSHPIT":
         await callback.message.answer()
-
+    await callback.answer()
 
 @dp.message(F.text == "🗓 Календарь приёма")
 async def calendar(message: types.Message):
@@ -440,27 +474,41 @@ async def cancel(message: types.Message):
 async def new_text(message: types.Message):
     usll = True
     # Математика, Русский, Информатика, Физика, Химия, Обществознание, Иностранный, Доп
-    if FLAG[str(message.from_user.id)][0] != False:
-        a = message.text
-        try:
-            a = int(a)
-            if 0 <= a <= 100:
-                SCORES[str(message.from_user.id)][int(FLAG[str(message.from_user.id)][0])] = a
-                with open('score.json', 'w') as fp:
-                    json.dump(SCORES, fp)  # Сохраняем в json
-                await message.answer('Принято. Можешь снова вызвать личный кабинет из меню.',
-                                     reply_markup=forbachelor.as_markup(resize_keyboard=True))
+    if str(message.from_user.id) in FLAG:
+        if FLAG[str(message.from_user.id)][0] != False:
+            a = message.text
+            try:
+                a = int(a)
+                if int(FLAG[str(message.from_user.id)][0]) == 7:
+                    if 0 <= a <= 10:
+                        SCORES[str(message.from_user.id)][int(FLAG[str(message.from_user.id)][0])] = a
+                        with open('score.json', 'w') as fp:
+                            json.dump(SCORES, fp)  # Сохраняем в json
+                        await message.answer('Принято. Можешь снова вызвать личный кабинет из меню.',
+                                             reply_markup=forbachelor.as_markup(resize_keyboard=True))
+                        FLAG[str(message.from_user.id)] = [False]
+                        with open('FLAG.json', 'w') as fp:
+                            json.dump(FLAG, fp)
+                    else:
+                        await message.answer('Введено неверное число. Попробуй снова.')
+                else:
+                    if 0 <= a <= 100:
+                        SCORES[str(message.from_user.id)][int(FLAG[str(message.from_user.id)][0])] = a
+                        with open('score.json', 'w') as fp:
+                            json.dump(SCORES, fp)  # Сохраняем в json
+                        await message.answer('Принято. Можешь снова вызвать личный кабинет из меню.',
+                                             reply_markup=forbachelor.as_markup(resize_keyboard=True))
+                        FLAG[str(message.from_user.id)] = [False]
+                        with open('FLAG.json', 'w') as fp:
+                            json.dump(FLAG, fp)
+                    else:
+                        await message.answer('Введено неверное число. Попробуй снова.')
+            except:
                 FLAG[str(message.from_user.id)] = [False]
                 with open('FLAG.json', 'w') as fp:
                     json.dump(FLAG, fp)
-            else:
-                await message.answer('Введено неверное число. Попробуй снова.')
-        except:
-            FLAG[str(message.from_user.id)] = [False]
-            with open('FLAG.json', 'w') as fp:
-                json.dump(FLAG, fp)
-            await message.answer('Было введено не просто число, так что вернёмся в меню.',
-                                 reply_markup=forbachelor.as_markup(resize_keyboard=True))
+                await message.answer('Было введено не просто число, так что вернёмся в меню.',
+                                     reply_markup=forbachelor.as_markup(resize_keyboard=True))
     elif str(message.from_user.id) in USERS and USERS[str(message.from_user.id)] != '':
         if USERS[str(message.from_user.id)] == 'bachelor':
             await message.answer('Я не понял, что ты хочешь. Воспользуйся кнопками ниже.',
