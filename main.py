@@ -30,6 +30,7 @@ async def send_welcome(message: types.Message):
     global USERS, COUNTER
     if str(message.from_user.id) not in USERS:
         COUNTER += 1
+        save_log('Новый пользователь {}'.format(str(message.from_user.id)))
     if str(message.from_user.id) not in USERS or USERS[
         str(message.from_user.id)][0] == '':  # Если это первый старт или пользователь не представился
         USERS[str(message.from_user.id)][0] = ['','']
