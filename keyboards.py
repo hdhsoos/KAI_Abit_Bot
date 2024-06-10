@@ -6,13 +6,8 @@ for el in ["📚 На бакалавриат", "👩‍🎓 В магистра�
     first_qu.add(types.KeyboardButton(text=el))
 first_qu.adjust(1)
 
-"""universal = ReplyKeyboardBuilder()  # Пока что универсальная клавиатура, предлагающая информацию
-for el in ["👋 О нас", "📋 Направления", "🌟 Мероприятия", "❓ Задать вопрос"]:
-    universal.add(types.KeyboardButton(text=el))
-universal.adjust(1)"""
-
 forbachelor = ReplyKeyboardBuilder()  # Клавиатура для бакалавров
-for el in ["👋 О нас", "📋 Направления", "🌟 Важно ознакомиться", "📃 Необходимые документы", "❓ Задать вопрос", "👤 Личный кабинет", "✖️ Изменить выбор"]:
+for el in ["👋 О нас", "📋 Направления", "🌟 Важно ознакомиться", "📃 Необходимые документы",  "👤 Личный кабинет", "🔍 Рекомендации", "❓ Задать вопрос", "✖️ Изменить выбор"]:
     forbachelor.add(types.KeyboardButton(text=el))
 forbachelor.adjust(2)
 
