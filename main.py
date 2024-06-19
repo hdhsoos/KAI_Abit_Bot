@@ -15,7 +15,7 @@ bot = Bot(token=api_token)  # Классические пункты для ра�
 dp = Dispatcher()
 with open('users.json', 'r') as fh:
     USERS = json.load(fh)  # Здесь будем хранить id пользователей
-    # {id: [type, number_doc]}
+    # {id: [type, [directions]]]}
 with open('score.json', 'r') as fh:  # Здесь будем хранить баллы
     SCORES = json.load(fh)
     # {id: [0, 0, 0, 0, 0, 0, 0, 0]}
@@ -23,6 +23,34 @@ with open('score.json', 'r') as fh:  # Здесь будем хранить ба
 with open('FLAG.json', 'r') as fh:  # Здесь будем хранить флаги
     FLAG = json.load(fh)
     # {id: [True]) задан ли вопрос
+
+
+@dp.message(Command("adm_change"))  # Реакция на команду старт
+async def adm_change(message: types.Message):
+    global forbachelor
+    if str(message.from_user.id) in ['397472187', '']:
+        file = open('flag.txt', 'r')
+        x = file.read()
+        file.close()
+        file = open('flag.txt', 'w')
+        if x == 'false':
+            file.write('true')
+            file.close()
+        else:
+            file.write('false')
+            file.close()
+        forbachelor = ReplyKeyboardBuilder()  # Клавиатура для бакалавров
+        if x == 'false':
+            A = ["👋 О нас", "📋 Направления", "🌟 Важно ознакомиться", "📃 Подача заявления", "👤 Калькулятор абитуриента",
+                 "🔍 Рекомендации", "❓ Задать вопрос", "✖️ Изменить выбор"]
+        else:
+            A = ["👋 О нас", "📋 Направления", "🌟 Важно ознакомиться", "📃 Подача заявления", "👤 Калькулятор абитуриента",
+                 "❓ Задать вопрос", "✖️ Изменить выбор"]
+        for el in A:
+            forbachelor.add(types.KeyboardButton(text=el))
+        forbachelor.adjust(2)
+        await message.answer('Изменения применены.',
+                             reply_markup=forbachelor.as_markup(resize_keyboard=True))
 
 
 @dp.message(Command("start"))  # Реакция на команду старт
@@ -97,36 +125,43 @@ async def clear(message: types.Message):
 
 @dp.message(F.text == "🔍 Рекомендации")
 async def recs_main(message: types.Message):
-    logging_date(str(message.from_user.id))
-    max_score = get_scores(str(message.from_user.id), SCORES)
-    doc = USERS[str(message.from_user.id)][1]
-    if doc == '' or max_score == 'notin' or max_score == 'nosum':
-        await message.answer(
-            'Чтобы получить рекомендации по направлениям, введи баллы и номер заявления в личном кабинете.',
-            reply_markup=forbachelor.as_markup(resize_keyboard=True))
+    file = open('flag.txt', 'r')
+    x = file.read()
+    file.close()
+    if x == 'true':
+        logging_date(str(message.from_user.id))
+        max_score = get_scores(str(message.from_user.id), SCORES)
+        doc = USERS[str(message.from_user.id)][1]
+        if doc == [] or max_score == 'notin' or max_score == 'nosum':
+            await message.answer(
+                'Чтобы получить рекомендации по направлениям, введи баллы и направления в личном кабинете.',
+                reply_markup=forbachelor.as_markup(resize_keyboard=True))
+        else:
+            spec = get_spec(USERS[str(message.from_user.id)][1])
+            res = 'Предлагаем вам данные направления в качестве альтернативы тех, на которые вы не поступаете:\n\n'
+            PR_BL = read_pr_bl()  # временно. потом надо перенести чтобы раз в неск часов
+            for el in spec:
+                y = PR_BL[el]
+                res += el + ' ({}) \n'.format(y)
+                if y > max_score:
+                    j = 0
+                    for pr in RECS[el]:
+                        if j <= 4:
+                            x = PR_BL[pr]
+                            if x <= max_score:
+                                res += '- {} ({})\n'.format(pr, x)
+                                j += 1
+                        else:
+                            break
+                    if j == 0:
+                        res += 'Ничего не могу подсказать.\n'  # надо подсказывать куда берут
+                    res += '\n'
+                else:
+                    res += 'Ваших баллов достаточно.\n\n'
+            await message.answer(res, reply_markup=forbachelor.as_markup(resize_keyboard=True))
     else:
-        spec = get_spec(USERS[str(message.from_user.id)][1])
-        res = 'Предлагаем вам данные направления в качестве альтернативы тех, на которые вы не поступаете:\n\n'
-        PR_BL = read_pr_bl()  # временно. потом надо перенести чтобы раз в неск часов
-        for el in spec:
-            y = PR_BL[el]
-            res += el + ' ({}) \n'.format(y)
-            if y > max_score:
-                j = 0
-                for pr in RECS[el]:
-                    if j <= 4:
-                        x = PR_BL[pr]
-                        if x <= max_score:
-                            res += '- {} ({})\n'.format(pr, x)
-                            j += 1
-                    else:
-                        break
-                if j == 0:
-                    res += 'Ничего не могу подсказать.\n'  # надо подсказывать куда берут
-                res += '\n'
-            else:
-                res += 'Ваших баллов достаточно.\n\n'
-        await message.answer(res, reply_markup=forbachelor.as_markup(resize_keyboard=True))
+        await message.answer('Эта функция на данный момент недоступна.',
+                             reply_markup=forbachelor.as_markup(resize_keyboard=True))
 
 
 @dp.message(F.text == "📚 На бакалавриат")  # Если написавший пользователь - бакалавр
@@ -176,7 +211,8 @@ async def grad(message: types.Message):
 @dp.message(F.text == "❓ Задать вопрос")  # Если нажата кнопка для вопроса
 async def askme(message: types.Message):
     logging_date(str(message.from_user.id))
-    await message.answer('Чтобы задать вопрос, напиши @abit_kai_help_bot, наши модераторы тебе помогут!')
+    await message.answer('💫 <a href="t.me/pk_kai24">Чтобы задать вопрос, напиши в наш чат!</a> 💫', parse_mode="HTML",
+                         disable_web_page_preview=True)
 
 
 @dp.message(F.text == "👤 Личный кабинет")
@@ -188,7 +224,7 @@ async def profile(message: types.Message):
         with open('score.json', 'w') as fp:
             json.dump(SCORES, fp)  # Сохраняем в json
         await message.answer("""
-Ты ещё не вводил(а) свои баллы ЕГЭ. Выбери предмет на кнопках выше и введи баллы, я запомню их.\nТакже можешь ввести свой номер заявления, чтобы потом я сам отслеживал поступаешь ли ты туда, куда хочешь.""",
+Ты ещё не вводил(а) свои баллы ЕГЭ. Выбери предмет на кнопках выше и введи баллы, я запомню их.\nТакже можешь ввести свои направления, чтобы потом я сам отслеживал поступаешь ли ты туда, куда хочешь.""",
                              reply_markup=subj_keyb)
     else:
         A = ['Математика', 'Русский язык', 'Информатика', 'Физика', 'Химия', 'Обществознание', 'Иностранный язык',
@@ -200,8 +236,6 @@ async def profile(message: types.Message):
         usl2 = False
         if s > 0:
             usl2 = True
-        if USERS[str(message.from_user.id)][1] != '':
-            res += 'Твой номер заявления: {}\n\n'.format(USERS[str(message.from_user.id)][1])
         for i in range(8):
             x = SCORES[str(message.from_user.id)][i]
             if x != 0:
@@ -218,10 +252,12 @@ async def profile(message: types.Message):
                     usl = False
         if end == '':
             end = 'Общая сумма: {}'.format(sum(SCORES[str(message.from_user.id)]))
+        if USERS[str(message.from_user.id)][1] != []:
+            end += '\nТвои направления: {}\n'.format(', '.join(USERS[str(message.from_user.id)][1]))
         await message.answer(
             """{}
 {}
-Нажми на кнопки ниже, если хочешь добавить или изменить баллы, ввести номер заявления. Чтобы удалить баллы по какому-то предмету, выбери его и отправь 0.""".format(
+Нажми на кнопки ниже, если хочешь добавить или изменить баллы, ввести новые направления. Чтобы удалить баллы по какому-то предмету, выбери его и отправь 0.""".format(
                 res, end), reply_markup=subj_keyb)
 
 
@@ -241,12 +277,13 @@ async def askme(message: types.Message):
         await message.answer('Кажется, мы незнакомы. Отправь команду /start и представься, пожалуйста.')
 
 
-@dp.message(F.text == "📃 Необходимые документы")
+@dp.message(F.text == "📃 Подача заявления")
 async def docs(message: types.Message):
     logging_date(str(message.from_user.id))
     if str(message.from_user.id) in USERS and USERS[str(message.from_user.id)][0] != '':
         if USERS[str(message.from_user.id)][0] == 'bachelor':
-            await message.answer("""При подаче заявления о приеме поступающий предоставляет/прикрепляет:
+            await message.answer("""Подать заявление можно на госуслугах, <a href="lk.kai.ru">в личном кабинете на сайте каи</a>, а также лично в университете.
+При подаче заявления о приеме поступающий предоставляет/прикрепляет:
 
 🔹Документ, удостоверяющий личность, гражданство (для иностранных граждан нотариально заверенный перевод);
 🔹Документ государственного образца об образовании (для иностранных граждан нотариально заверенный перевод);
@@ -333,7 +370,8 @@ async def callbacks_num(callback: types.CallbackQuery):
         with open('FLAG.json', 'w') as fp:
             json.dump(FLAG, fp)
     elif action == 'number_doc':
-        await callback.message.answer('Введи номер. Если передумал(а) отправь любой символ.')
+        await callback.message.answer(
+            'Введи до пяти направлений через пробел. Например: "09.03.04 10.03.01 01.03.02". Если передумал(а) отправь "стоп".')
         FLAG[str(callback.from_user.id)] = ['doc']
         with open('FLAG.json', 'w') as fp:
             json.dump(FLAG, fp)
@@ -476,7 +514,9 @@ async def important(message: types.Message):
         if USERS[str(message.from_user.id)][0] == 'bachelor':
             await message.answer("""В первую очередь зарегистрируйся в личном кабинете абитуриента lk.kai.ru - там ты сможешь подать документы в электронной форме, отследить свой рейтинг и узнать о том, что поступил(а)!
 Также можешь ознакомиться с <a href="https://abiturientu.kai.ru/documents/1470594/10919962/Правила+приема+BO.pdf/2f8200d9-c9e8-4672-a0d1-be511bd781ad">правилами приёма</a> и <a href="https://abiturientu.kai.ru/normativnye-dokumenty">нормативными документами</a>.
-А на <a href="https://abiturientu.kai.ru/bakalavriat">сайте КАИ</a> ты можешь узнать подробнее о порядке поступления на бакалавриат и специалитет.""",
+А на <a href="https://abiturientu.kai.ru/bakalavriat">сайте КАИ</a> ты можешь узнать подробнее о порядке поступления на бакалавриат и специалитет.
+
+Также предлагаем подписаться на наш <a href="https://www.youtube.com/c/knitukai">YouTube-канал</a>, чтобы узнавать новости. К тому же вступай в наш <a href="https://t.me/pk_kai24">чат в Telegram</a>, где можно пообщаться или задать вопросы.""",
                                  parse_mode="HTML", disable_web_page_preview=True)
     else:
         await message.answer('Кажется, мы незнакомы. Отправь команду /start и представься, пожалуйста.')
@@ -551,22 +591,50 @@ async def new_text(message: types.Message):
             a = message.text
             if FLAG[str(message.from_user.id)][0] == 'doc':
                 try:
-                    if a == '0':
-                        USERS[str(message.from_user.id)][1] = ''
+                    a = a.split()
+                    if a[0].lower() == 'стоп':
+                        FLAG[str(message.from_user.id)] = [False]
+                        with open('FLAG.json', 'w') as fp:
+                            json.dump(FLAG, fp)
+                        await message.answer('Хорошо, вернёмся в меню.',
+                                             reply_markup=forbachelor.as_markup(resize_keyboard=True))
+                    elif a[0] == '0':
+                        USERS[str(message.from_user.id)][1] = []
+                        with open('users.json', 'w') as fp:
+                            json.dump(USERS, fp)
+                        FLAG[str(message.from_user.id)] = [False]
+                        with open('FLAG.json', 'w') as fp:
+                            json.dump(FLAG, fp)
+                        await message.answer('Принято. Можешь снова вызвать личный кабинет из меню.',
+                                             reply_markup=forbachelor.as_markup(resize_keyboard=True))
                     else:
-                        USERS[str(message.from_user.id)][1] = int(a)
-                    with open('users.json', 'w') as fp:
-                        json.dump(USERS, fp)
-                    FLAG[str(message.from_user.id)] = [False]
-                    with open('FLAG.json', 'w') as fp:
-                        json.dump(FLAG, fp)
-                    await message.answer('Принято. Можешь снова вызвать личный кабинет из меню.',
-                                         reply_markup=forbachelor.as_markup(resize_keyboard=True))
+                        if len(a) > 5:
+                            await message.answer('Ты можешь ввести не больше пяти направлений. Попробуй ещё раз.')
+                        else:
+                            usl = True  # все направления существуют
+                            res = []
+                            for i in range(len(a)):
+                                el = a[i]
+                                if el not in a[i+1:]:
+                                    if el not in RECS:
+                                        usl = False
+                                        await message.answer('Направления {} не существует. Попробуй ещё раз.'.format(el))
+                                    else:
+                                        res.append(el)
+                            if usl:
+                                USERS[str(message.from_user.id)][1] = res
+                                with open('users.json', 'w') as fp:
+                                    json.dump(USERS, fp)
+                                FLAG[str(message.from_user.id)] = [False]
+                                with open('FLAG.json', 'w') as fp:
+                                    json.dump(FLAG, fp)
+                                await message.answer('Принято. Можешь снова вызвать личный кабинет из меню.',
+                                                 reply_markup=forbachelor.as_markup(resize_keyboard=True))
                 except:
                     FLAG[str(message.from_user.id)] = [False]
                     with open('FLAG.json', 'w') as fp:
                         json.dump(FLAG, fp)
-                    await message.answer('Было введено не просто число, так что вернёмся в меню.',
+                    await message.answer('Произошла ошибка, так что вернёмся в меню.',
                                          reply_markup=forbachelor.as_markup(resize_keyboard=True))
             else:
                 try:

@@ -7,7 +7,14 @@ for el in ["📚 На бакалавриат", "👩‍🎓 В магистра�
 first_qu.adjust(1)
 
 forbachelor = ReplyKeyboardBuilder()  # Клавиатура для бакалавров
-for el in ["👋 О нас", "📋 Направления", "🌟 Важно ознакомиться", "📃 Необходимые документы",  "👤 Личный кабинет", "🔍 Рекомендации", "❓ Задать вопрос", "✖️ Изменить выбор"]:
+file = open('flag.txt', 'r')
+x = file.read()
+file.close()
+if x == 'true':
+    A = ["👋 О нас", "📋 Направления", "🌟 Важно ознакомиться", "📃 Подача заявления",  "👤 Личный кабинет", "🔍 Рекомендации", "❓ Задать вопрос", "✖️ Изменить выбор"]
+else:
+    A = ["👋 О нас", "📋 Направления", "🌟 Важно ознакомиться", "📃 Подача заявления",  "👤 Личный кабинет", "❓ Задать вопрос", "✖️ Изменить выбор"]
+for el in A:
     forbachelor.add(types.KeyboardButton(text=el))
 forbachelor.adjust(2)
 
@@ -51,7 +58,7 @@ buttons = [[types.InlineKeyboardButton(text="✈️ ИАНТЭ", callback_data="
 facult_keyb = types.InlineKeyboardMarkup(inline_keyboard=buttons)
 
 # Математика, Русский, Информатика, Физика, Химия, Обществознание, Иностранный, Доп
-buttons = [[types.InlineKeyboardButton(text="Ввести номер заявления", callback_data="number_doc")],
+buttons = [[types.InlineKeyboardButton(text="Ввести направления", callback_data="number_doc")],
             [types.InlineKeyboardButton(text="Математика", callback_data="Subj_0"), types.InlineKeyboardButton(text="Русский", callback_data="Subj_1")],
            [types.InlineKeyboardButton(text="Информатика", callback_data="Subj_2"), types.InlineKeyboardButton(text="Физика", callback_data="Subj_3")],
            [types.InlineKeyboardButton(text="Химия", callback_data="Subj_4"), types.InlineKeyboardButton(text="Обществознание", callback_data="Subj_5")],
