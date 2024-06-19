@@ -9,11 +9,6 @@ def save_log(text):
     file.close()
 
 
-def get_spec(number_doc):
-    # здесь в дальнейшем будет выдача выбранных направлений
-    return ["01.03.02", "09.03.04", "10.03.01", "24.03.04"]
-
-
 def logging_date(id):
     with open('stats.json', 'r') as fh:  # Здесь будем хранить дату последнего входа для каждого
         STATS = json.load(fh)
