@@ -23,12 +23,13 @@ with open('score.json', 'r') as fh:  # Здесь будем хранить ба
 with open('FLAG.json', 'r') as fh:  # Здесь будем хранить флаги
     FLAG = json.load(fh)
     # {id: [True]) задан ли вопрос
+admins = ['397472187', '537266469']
 
 
 @dp.message(Command("adm_change"))  # Реакция на команду старт
 async def adm_change(message: types.Message):
     global forbachelor
-    if str(message.from_user.id) in ['397472187', '']:
+    if str(message.from_user.id) in admins:
         file = open('flag.txt', 'r')
         x = file.read()
         file.close()
@@ -50,6 +51,9 @@ async def adm_change(message: types.Message):
             forbachelor.add(types.KeyboardButton(text=el))
         forbachelor.adjust(2)
         await message.answer('Изменения применены.',
+                             reply_markup=forbachelor.as_markup(resize_keyboard=True))
+    else:
+        await message.answer('Эта функция для вас недоступна.',
                              reply_markup=forbachelor.as_markup(resize_keyboard=True))
 
 
@@ -92,26 +96,29 @@ async def send_welcome(message: types.Message):
 
 @dp.message(Command("stats"))  # Реакция на команду stats
 async def stats(message: types.Message):
-    count_b, count_m, count_s, count_today = 0, 0, 0, 0
-    a = str(date.today())
-    for el in USERS:
-        if USERS[el][0] == 'bachelor':
-            count_b += 1
-        elif USERS[el][0] == 'magistracy':
-            count_m += 1
-        elif USERS[el][0] == 'spo':
-            count_s += 1
-    with open('stats.json', 'r') as fh:
-        STATS = json.load(fh)
-    for el in STATS:
-        if STATS[el] == a:
-            count_today += 1
-    await message.answer("""Всего пользователей: {}
-Бакалавриат: {}
-Магистратура: {}
-СПО: {}""".format(len(USERS), count_b, count_m, count_s))
-    await message.answer("""Пользователей заходило сегодня: {}""".format(count_today))
-
+    if str(message.from_user.id) in admins:
+        count_b, count_m, count_s, count_today = 0, 0, 0, 0
+        a = str(date.today())
+        for el in USERS:
+            if USERS[el][0] == 'bachelor':
+                count_b += 1
+            elif USERS[el][0] == 'magistracy':
+                count_m += 1
+            elif USERS[el][0] == 'spo':
+                count_s += 1
+        with open('stats.json', 'r') as fh:
+            STATS = json.load(fh)
+        for el in STATS:
+            if STATS[el] == a:
+                count_today += 1
+        await message.answer("""Всего пользователей: {}
+    Бакалавриат: {}
+    Магистратура: {}
+    СПО: {}""".format(len(USERS), count_b, count_m, count_s))
+        await message.answer("""Пользователей заходило сегодня: {}""".format(count_today))
+    else:
+        await message.answer('Эта функция для вас недоступна.',
+                             reply_markup=forbachelor.as_markup(resize_keyboard=True))
 
 @dp.message(F.text == "✖️ Изменить выбор")  # Команда clear, которая позволяет перевыбрать направление
 async def clear(message: types.Message):
@@ -615,10 +622,11 @@ async def new_text(message: types.Message):
                             res = []
                             for i in range(len(a)):
                                 el = a[i]
-                                if el not in a[i+1:]:
+                                if el not in a[i + 1:]:
                                     if el not in RECS:
                                         usl = False
-                                        await message.answer('Направления {} не существует. Попробуй ещё раз.'.format(el))
+                                        await message.answer(
+                                            'Направления {} не существует. Попробуй ещё раз.'.format(el))
                                     else:
                                         res.append(el)
                             if usl:
@@ -629,7 +637,7 @@ async def new_text(message: types.Message):
                                 with open('FLAG.json', 'w') as fp:
                                     json.dump(FLAG, fp)
                                 await message.answer('Принято. Можешь снова вызвать личный кабинет из меню.',
-                                                 reply_markup=forbachelor.as_markup(resize_keyboard=True))
+                                                     reply_markup=forbachelor.as_markup(resize_keyboard=True))
                 except:
                     FLAG[str(message.from_user.id)] = [False]
                     with open('FLAG.json', 'w') as fp:
