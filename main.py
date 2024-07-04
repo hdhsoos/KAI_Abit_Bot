@@ -145,7 +145,7 @@ async def recs_main(message: types.Message):
                 reply_markup=forbachelor.as_markup(resize_keyboard=True))
         else:
             spec = USERS[str(message.from_user.id)][1]
-            res = 'Предлагаем вам данные направления в качестве альтернативы тех, на которые ваши шансы поступить невысоки:\n\n'
+            res = 'Предлагаем вам данные направления в качестве альтернативы тех, на которые ваши шансы поступить невысоки. Проходные баллы указаны ориентировочно.\n\n'
             PR_BL = read_pr_bl()  # временно. потом надо перенести чтобы раз в неск часов
             for el in spec:
                 y = PR_BL[el]
