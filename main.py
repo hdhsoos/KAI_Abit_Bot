@@ -146,6 +146,7 @@ async def recs_main(message: types.Message):
                 reply_markup=forbachelor.as_markup(resize_keyboard=True))
         else:
             spec = USERS[str(message.from_user.id)][1]
+            counter_recs = 0
             res = 'Предлагаем вам данные направления в качестве альтернативы тех, на которые ваши шансы поступить невысоки. Проходные баллы указаны ориентировочно.\n\n'
             PR_BL = read_pr_bl()  # временно. потом надо перенести чтобы раз в неск часов
             for el in spec:
@@ -165,7 +166,10 @@ async def recs_main(message: types.Message):
                         res += 'Ничего не могу подсказать.\n'  # надо подсказывать куда берут
                     res += '\n'
                 else:
+                    counter_recs += 1
                     res += 'Ваших баллов достаточно.\n\n'
+            if counter_recs == len(spec):
+                res = 'Вы проходите на все желаемые направления!'
             await message.answer(res, reply_markup=forbachelor.as_markup(resize_keyboard=True))
     else:
         await message.answer('Эта функция на данный момент недоступна.',
