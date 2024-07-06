@@ -52,6 +52,10 @@ def read_pr_bl():
     PR_BL = {}
     for el in file:
         a, b = el.split()
+        if a == '09.03.01.1':
+            a = '09.03.01(ВШПИТ)'
+        elif a == '12.03.04.1':
+            a = '12.03.04(ИАЭП)'
         PR_BL[a] = int(b)
     file.close()
     return PR_BL

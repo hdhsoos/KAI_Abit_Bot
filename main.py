@@ -25,6 +25,7 @@ with open('FLAG.json', 'r') as fh:  # Здесь будем хранить фл�
     # {id: [True]) задан ли вопрос
 admins = ['397472187', '537266469']
 
+basic_answer_unknown = 'Кажется, мы незнакомы. Отправь команду /start и представься, пожалуйста.'
 
 @dp.message(Command("adm_change"))  # Реакция на команду старт
 async def adm_change(message: types.Message):
@@ -260,12 +261,12 @@ async def profile(message: types.Message):
         if end == '':
             end = 'Общая сумма: {}'.format(sum(SCORES[str(message.from_user.id)]))
         if USERS[str(message.from_user.id)][1] != []:
-            end += '\nТвои направления: {}\n'.format(', '.join(USERS[str(message.from_user.id)][1]))
+            end += '\nТвои направления: <code>{}</code>\n'.format(' '.join(USERS[str(message.from_user.id)][1]))
         await message.answer(
             """{}
 {}
 Нажми на кнопки ниже, если хочешь добавить или изменить баллы, ввести новые направления. Чтобы удалить баллы по какому-то предмету, выбери его и отправь 0.""".format(
-                res, end), reply_markup=subj_keyb)
+                res, end), reply_markup=subj_keyb, parse_mode='HTML')
 
 
 @dp.message(F.text == "👋 О нас")
@@ -281,7 +282,7 @@ async def askme(message: types.Message):
 Колледж информационных технологий и технический колледж. Выбери на клавиатуре, о каком колледже хочешь узнать подробнее.""",
                                  reply_markup=spo_about.as_markup(resize_keyboard=True))
     else:
-        await message.answer('Кажется, мы незнакомы. Отправь команду /start и представься, пожалуйста.')
+        await message.answer(basic_answer_unknown)
 
 
 @dp.message(F.text == "📃 Подача заявления")
@@ -324,7 +325,7 @@ async def docs(message: types.Message):
 Календарь приёма можно <a href="https://abiturientu.kai.ru/kalendar-priema">посмотреть тут</a>.""",
                                  parse_mode="HTML", disable_web_page_preview=True)
     else:
-        await message.answer('Кажется, мы незнакомы. Отправь команду /start и представься, пожалуйста.')
+        await message.answer(basic_answer_unknown)
 
 
 @dp.message(F.text == "📋 Направления")
@@ -364,7 +365,7 @@ async def directions(message: types.Message):
         elif USERS[str(message.from_user.id)][0] == 'grad':
             await message.answer("""""", parse_mode="HTML", disable_web_page_preview=True)
     else:
-        await message.answer('Кажется, мы незнакомы. Отправь команду /start и представься, пожалуйста.')
+        await message.answer(basic_answer_unknown)
 
 
 @dp.callback_query()
@@ -378,7 +379,7 @@ async def callbacks_num(callback: types.CallbackQuery):
             json.dump(FLAG, fp)
     elif action == 'number_doc':
         await callback.message.answer(
-            'Введи до пяти направлений через пробел. Например: "09.03.04 10.03.01 01.03.02". Если передумал(а) отправь "стоп".')
+            'Введи до пяти направлений через пробел. Например: "<code>09.03.04 10.03.01 01.03.02</code>". Если передумал(а) отправь "<code>стоп</code>".\n\nВажно! Существуют направления, которые ДУБЛИРУЮТСЯ.\nЕсли ты поступаешь на "Информатику и вычислительную технику" на ИКТЗИ, вводи <code>09.03.01</code>, а если на ВШПИТ, то <code>09.03.01(ВШПИТ)</code>. <code>12.03.04</code> для ИРЭФ-ЦТ и <code>12.03.04(ИАЭП)</code> для ИАЭП.', parse_mode="HTML")
         FLAG[str(callback.from_user.id)] = ['doc']
         with open('FLAG.json', 'w') as fp:
             json.dump(FLAG, fp)
@@ -526,7 +527,7 @@ async def important(message: types.Message):
 Также предлагаем подписаться на наш <a href="https://www.youtube.com/c/knitukai">YouTube-канал</a>, чтобы узнавать новости. К тому же вступай в наш <a href="https://t.me/pk_kai24">чат в Telegram</a>, где можно пообщаться или задать вопросы.""",
                                  parse_mode="HTML", disable_web_page_preview=True)
     else:
-        await message.answer('Кажется, мы незнакомы. Отправь команду /start и представься, пожалуйста.')
+        await message.answer(basic_answer_unknown)
 
 
 @dp.message(F.text == "Колледж Информационных Технологий")
@@ -560,7 +561,7 @@ async def exams(message: types.Message):
 
 Расписание вступительных испытаний на 2024 год появится позже.""", parse_mode="HTML", disable_web_page_preview=True)
     else:
-        await message.answer('Кажется, мы незнакомы. Отправь команду /start и представься, пожалуйста.')
+        await message.answer(basic_answer_unknown)
 
 
 @dp.message(F.text == "🔍 Ещё")
@@ -571,7 +572,7 @@ async def askme(message: types.Message):
                 '🏆 КНИТУ-КАИ входит в ТОП-50 лучших вузов страны: 👇\nhttps://raex-rr.com/education/russian_universities/top-100_universities/2023/',
                 reply_markup=back_menu.as_markup(resize_keyboard=True))
     else:
-        await message.answer('Кажется, мы незнакомы. Отправь команду /start и представься, пожалуйста.')
+        await message.answer(basic_answer_unknown)
 
 
 @dp.message(F.text == "❌ Вернуться в меню")  # Если нажата кнопка возврата в меню
@@ -586,7 +587,7 @@ async def cancel(message: types.Message):
     elif USERS[str(message.from_user.id)][0] == 'grad':
         await message.answer("Хорошо, вернёмся в меню.", reply_markup=forgrad.as_markup(resize_keyboard=True))
     else:
-        await message.answer('Кажется, мы незнакомы. Отправь команду /start и представься, пожалуйста.')
+        await message.answer(basic_answer_unknown)
 
 
 @dp.message(F.text)  # Обработка любых текстовых сообщений
@@ -691,9 +692,9 @@ async def new_text(message: types.Message):
                 await message.answer('Я не понял, что ты хочешь. Воспользуйся кнопками ниже.',
                                      reply_markup=forgrad.as_markup(resize_keyboard=True))
             else:
-                await message.answer('Кажется, мы незнакомы. Отправь команду /start и представься, пожалуйста.')
+                await message.answer(basic_answer_unknown)
     else:
-        await message.answer('Кажется, мы незнакомы. Отправь команду /start и представься, пожалуйста.')
+        await message.answer(basic_answer_unknown)
 
 
 async def main():
