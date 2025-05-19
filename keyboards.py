@@ -2,7 +2,7 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from aiogram import types
 
 first_qu = ReplyKeyboardBuilder()  # Первая клавиатура - спрашиваем, кем является пользователь
-for el in ["📚 На бакалавриат", "👩‍🎓 В магистратуру", "📔 На СПО"]: #, "🔭 В аспирантуру"
+for el in ["📚 На бакалавриат", "👩‍🎓 В магистратуру", "📔 На СПО"]:
     first_qu.add(types.KeyboardButton(text=el))
 first_qu.adjust(1)
 
@@ -11,9 +11,9 @@ file = open('flag.txt', 'r')
 x = file.read()
 file.close()
 if x == 'true':
-    A = ["👋 О нас", "📋 Направления", "🌟 Важно ознакомиться", "📃 Подача заявления",  "👤 Личный кабинет", "🔍 Рекомендации", "❓ Задать вопрос", "✖️ Изменить выбор"]
+    A = ["👋 О нас", "📋 Направления", "🌟 Важно ознакомиться", "📃 Необходимые документы",  "👤 Личный кабинет", "🔍 Рекомендации", "❓ Задать вопрос", "✖️ Изменить выбор"]
 else:
-    A = ["👋 О нас", "📋 Направления", "🌟 Важно ознакомиться", "📃 Подача заявления",  "👤 Личный кабинет", "❓ Задать вопрос", "✖️ Изменить выбор"]
+    A = ["👋 О нас", "📋 Направления", "🌟 Важно ознакомиться", "📃 Необходимые документы",  "👤 Личный кабинет", "❓ Задать вопрос", "✖️ Изменить выбор"]
 for el in A:
     forbachelor.add(types.KeyboardButton(text=el))
 forbachelor.adjust(2)
@@ -64,3 +64,4 @@ buttons = [[types.InlineKeyboardButton(text="Ввести направления
            [types.InlineKeyboardButton(text="Химия", callback_data="Subj_4"), types.InlineKeyboardButton(text="Обществознание", callback_data="Subj_5")],
            [types.InlineKeyboardButton(text="Иностранный", callback_data="Subj_6"),  types.InlineKeyboardButton(text="Дополнительные баллы", callback_data="Subj_7")]]
 subj_keyb = types.InlineKeyboardMarkup(inline_keyboard=buttons)
+

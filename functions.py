@@ -22,15 +22,9 @@ def logging_date(id):
 def get_scores(id, SCORES):
     if id not in SCORES:
         return 'notin'
-    A = ['Математика', 'Русский язык', 'Информатика', 'Физика', 'Химия', 'Обществознание', 'Иностранный язык',
-         'Дополнительные баллы']
-    res = ''
-    end = ''
     s = SCORES[id][-1]  # Сумма математика + русский + достижения
     usl = True  # Останется тру если русский и математика есть
     B = []
-    if s > 0:
-        usl2 = True
     for i in range(8):
         x = SCORES[id][i]
         if x != 0:

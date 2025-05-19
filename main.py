@@ -1,15 +1,11 @@
-# -*- coding: utf-8 -*-
+from aiogram import Bot, Dispatcher, types, F
+from aiogram.filters.command import Command
+import asyncio
 
 from api import api_token  # Токен в отдельном файле
 from keyboards import *  # Клавиатуры в отдельном файле
-from aiogram import Bot, Dispatcher, types, F
-from aiogram.filters.command import Command
-import aioschedule
-import asyncio
-import json
-from datetime import date
-from functions import *
-from recs import *
+from functions import *  # Некоторые функции в отдельном файле
+from recs import *  # Рекомендации по каждому направлению в отдельном файле
 
 bot = Bot(token=api_token)  # Классические пункты для работы с aiogram
 dp = Dispatcher()
@@ -23,11 +19,15 @@ with open('score.json', 'r') as fh:  # Здесь будем хранить ба
 with open('FLAG.json', 'r') as fh:  # Здесь будем хранить флаги
     FLAG = json.load(fh)
     # {id: [True]) задан ли вопрос
-admins = ['397472187', '537266469']
+admins = []
+with open('admins.txt', 'r') as adm:
+    for el in adm:
+        admins += el.split()  # список id администраторов находится в отдельном файле в одну строку через пробел
 
 basic_answer_unknown = 'Кажется, мы незнакомы. Отправь команду /start и представься, пожалуйста.'
 
-@dp.message(Command("adm_change"))  # Реакция на команду старт
+
+@dp.message(Command("adm_change"))  # Реакция на команду adm_change
 async def adm_change(message: types.Message):
     global forbachelor
     if str(message.from_user.id) in admins:
@@ -66,22 +66,21 @@ async def send_welcome(message: types.Message):
         save_log('Новый пользователь {}'.format(str(message.from_user.id)))
     if str(message.from_user.id) not in USERS or USERS[
         str(message.from_user.id)][0] == '':  # Если это первый старт или пользователь не представился
-        USERS[str(message.from_user.id)][0] = ['', '']
+        USERS[str(message.from_user.id)] = ['', []]
         with open('users.json', 'w') as fp:
             json.dump(USERS, fp)
         FLAG[str(message.from_user.id)] = [False]
         with open('FLAG.json', 'w') as fp:
             json.dump(FLAG, fp)
         await message.answer(
-            'Привет, {}. Я бот КНИТУ-КАИ, и я помогу тебе узнать информацию о поступлении в 2024 году.'.format(
+            'Привет, {}. Я бот КНИТУ-КАИ, и я помогу тебе узнать информацию о поступлении в 2025 году.'.format(
                 message.from_user.first_name))
         await message.answer("Выбери на клавиатуре, куда ты будешь поступать.",
                              reply_markup=first_qu.as_markup(resize_keyboard=True))
     else:
         # Если это не первый старт
-        if USERS[
-            str(message.from_user.id)][
-            0] == 'bachelor':  # приходится проверять, потому что для разных пользователей разные клавиатуры
+        if USERS[str(message.from_user.id)][0] == 'bachelor':
+            # приходится проверять, потому что для разных пользователей разные клавиатуры
             await message.answer('Мы уже здоровались! Выбери команду на кнопках ниже.',
                                  reply_markup=forbachelor.as_markup(resize_keyboard=True))
         elif USERS[str(message.from_user.id)][0] == 'magistracy':
@@ -120,6 +119,7 @@ async def stats(message: types.Message):
     else:
         await message.answer('Эта функция для вас недоступна.',
                              reply_markup=forbachelor.as_markup(resize_keyboard=True))
+
 
 @dp.message(F.text == "✖️ Изменить выбор")  # Команда clear, которая позволяет перевыбрать направление
 async def clear(message: types.Message):
@@ -289,7 +289,7 @@ async def askme(message: types.Message):
         await message.answer(basic_answer_unknown)
 
 
-@dp.message(F.text == "📃 Подача заявления")
+@dp.message(F.text == "📃 Необходимые документы")
 async def docs(message: types.Message):
     logging_date(str(message.from_user.id))
     if str(message.from_user.id) in USERS and USERS[str(message.from_user.id)][0] != '':
@@ -355,7 +355,7 @@ async def directions(message: types.Message):
 🔸<a href="https://abiturientu.kai.ru/documents/1470594/12192680/ПЛАН+ПРИЁМА+маг+договор+2024.pdf/63161d0b-5466-4c28-a1ba-4718ba791dcb">С оплатой стоимости</a>
 🔸<a href="https://abiturientu.kai.ru/documents/1470594/12192680/ПЛАН+ПРИЁМА+цно+маг+договор+2024.pdf/2e4a2f9f-36e1-4a48-8d7d-fa521e340375">С оплатой стоимости, заочное обучение</a>
 
-Проходные баллы за 2023 год можно найти <a href="https://abiturientu.kai.ru/documents/1470594/10927743/Результаты+конкурсного+приема+2023.pdf/1015e6e2-f98e-4f84-88eb-57b99c258d07">здесь</a>.""",
+Проходные баллы за 2024 год можно найти <a href="https://abiturientu.kai.ru/documents/1470594/10927743/Результаты+конкурсного+приема+2023.pdf/1015e6e2-f98e-4f84-88eb-57b99c258d07">здесь</a>.""",
                                  parse_mode="HTML", disable_web_page_preview=True)
         elif USERS[str(message.from_user.id)][0] == 'spo':
             await message.answer("""<a href="https://abiturientu.kai.ru/obrazovatel-nye-programmy?ed=3">По этой ссылке</a> ты можешь выбрать образовательную программу, используя фильтры.
@@ -364,10 +364,8 @@ async def directions(message: types.Message):
 ▪️ <a href="https://abiturientu.kai.ru/documents/1470594/12196147/ПЛАН+ПРИЕМА+СПО+бюджет.pdf/d7545213-5190-4cb1-b667-344f4772af4a">На бюджетное обучение</a>
 ▪️ <a href="https://abiturientu.kai.ru/documents/1470594/12196147/ПЛАН+ПРИЕМА+СПО+договор.pdf/7ea9acca-8072-4150-b19c-664f52a050b2">С оплатой стоимости</a>
 
-Проходные баллы за 2023 год можно найти <a href="https://abiturientu.kai.ru/documents/1470594/10927743/Результаты+конкурсного+приема+2023.pdf/1015e6e2-f98e-4f84-88eb-57b99c258d07">здесь</a>.""",
+Проходные баллы за 2024 год можно найти <a href="https://abiturientu.kai.ru/documents/1470594/10927743/Результаты+конкурсного+приема+2023.pdf/1015e6e2-f98e-4f84-88eb-57b99c258d07">здесь</a>.""",
                                  parse_mode="HTML", disable_web_page_preview=True)
-        elif USERS[str(message.from_user.id)][0] == 'grad':
-            await message.answer("""""", parse_mode="HTML", disable_web_page_preview=True)
     else:
         await message.answer(basic_answer_unknown)
 
@@ -383,7 +381,8 @@ async def callbacks_num(callback: types.CallbackQuery):
             json.dump(FLAG, fp)
     elif action == 'number_doc':
         await callback.message.answer(
-            'Введи до пяти направлений через пробел. Например: "<code>09.03.04 10.03.01 01.03.02</code>". Если передумал(а) отправь "<code>стоп</code>".\n\nВажно! Существуют направления, которые ДУБЛИРУЮТСЯ.\nЕсли ты поступаешь на "Информатику и вычислительную технику" на ИКТЗИ, вводи <code>09.03.01</code>, а если на ВШПИТ, то <code>09.03.01(ВШПИТ)</code>. <code>12.03.04</code> для ИРЭФ-ЦТ и <code>12.03.04(ИАЭП)</code> для ИАЭП.', parse_mode="HTML")
+            'Введи до пяти направлений через пробел. Например: "<code>09.03.04 10.03.01 01.03.02</code>". Если передумал(а) отправь "<code>стоп</code>".\n\nВажно! Существуют направления, которые ДУБЛИРУЮТСЯ.\nЕсли ты поступаешь на "Информатику и вычислительную технику" на ИКТЗИ, вводи <code>09.03.01</code>, а если на ВШПИТ, то <code>09.03.01(ВШПИТ)</code>. <code>12.03.04</code> для ИРЭФ-ЦТ и <code>12.03.04(ИАЭП)</code> для ИАЭП.',
+            parse_mode="HTML")
         FLAG[str(callback.from_user.id)] = ['doc']
         with open('FLAG.json', 'w') as fp:
             json.dump(FLAG, fp)
@@ -563,7 +562,7 @@ async def exams(message: types.Message):
         if USERS[str(message.from_user.id)][0] == 'magistracy':
             await message.answer("""С программами вступительных испытаний по каждому направлению можно ознакомиться <a href="https://abiturientu.kai.ru/programmy-vstupitel-nyh-ispytanij1">здесь</a>.
 
-Расписание вступительных испытаний на 2024 год появится позже.""", parse_mode="HTML", disable_web_page_preview=True)
+Расписание вступительных испытаний на 2025 год появится позже.""", parse_mode="HTML", disable_web_page_preview=True)
     else:
         await message.answer(basic_answer_unknown)
 
